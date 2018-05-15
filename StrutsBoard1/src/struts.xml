@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+
+<struts>
+	<constant name="struts.multipart.maxSize" value="104857600" />
+
+	<package name="board" extends="struts-default">
+
+		<!-- <global-results> <result name="error">/board/pageError.jsp</result> 
+			</global-results> <global-exception-mappings> <exception-mapping result="error" 
+			exception="java.lang.Exception" /> </global-exception-mappings> -->
+
+		<action name="listAction" class="board.listAction">
+			<result>/board/boardList.jsp</result>
+		</action>
+	</package>
+
+	<package name="board2" extends="struts-default">
+		<action name="writeForm" class="board.writeAction" method="form">
+			<result>/board/boardWrite.jsp</result>
+		</action>
+
+		<action name="writeAction" class="board.writeAction">
+			<result type="redirect-action">
+				<param name="actionName">listAction</param>
+			</result>
+		</action>
+	</package>
+</struts>
