@@ -1,15 +1,17 @@
 package board;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.*;
 import java.io.Reader;
-import java.util.Calendar;
+import java.io.IOException;
 
-import javax.annotation.Resources;
-import javax.security.sasl.SaslClient;
+
 
 import org.apache.commons.io.FileUtils;
 
+import com.ibatis.common.resources.Resources;
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.ibatis.sqlmap.client.SqlMapClientBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
 
@@ -18,7 +20,7 @@ import com.opensymphony.xwork2.ActionSupport;
 public class writeAction extends ActionSupport{
 	
 	public static Reader reader; //파일 스트림을 위한 reader.
-	public static SaslClient sqlMapper; //SqlMapClient API를 사용하기 위한 sqlMapper 객체.
+	public static SqlMapClient sqlMapper; //SqlMapClient API를 사용하기 위한 sqlMapper 객체.
 	
 	private boardVO paramClass; //파라미터를 저장할 객체
 	private boardVO resultClass; //쿼리 결과 값을 저장할 객체
@@ -61,28 +63,146 @@ public class writeAction extends ActionSupport{
 		
 		sqlMapper.insert("insertBoard", paramClass);
 		
-		if(getUploads() != null) {
+		if (getUpload() != null) {
 			
-			resultClass = (boardVO) sql.Mapper.queryForObject("selectLastNo");
+			resultClass = (boardVO) sqlMapper.queryForObject("selectLastNo");
 			
 			//실제 서버에 저장될 파일 이름과 확장자 설정.
 			String file_name = "file_" + resultClass.getNo();
 			String file_ext = getUploadFileName().substring(
 					getUploadFileName().lastIndexOf('.') + 1,
-					getUploadFileName()/length());
+					getUploadFileName().length());
 			
 			//서버에 파일 저장.
 			File destFile = new File(fileUploadPath + file_name + "." + file_ext);
-			FileUtils.copyFile(getUploads, destFile);
+			FileUtils.copyFile(getUpload(), destFile);
 			
 			paramClass.setNo(resultClass.getNo());
-			paramClass.setfile_orgname(getUploadsFileName());
+			paramClass.setFile_orgname(getUploadFileName());		//원래 파일 이름
 			paramClass.setFile_savname(file_name + "." +file_ext);
+			sqlMapper.update("updateFile", paramClass);
 		}
-		
-		
+
+		return SUCCESS;
 	}
 
+	public Calendar getToday() {
+		return today;
+	}
 
+	public void setToday(Calendar today) {
+		this.today = today;
+	}
 
+	public boardVO getParamClass() {
+		return paramClass;
+	}
+
+	public void setParamClass(boardVO paramClass) {
+		this.paramClass = paramClass;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public File getUpload() {
+		return upload;
+	}
+
+	public void setUpload(File upload) {
+		this.upload = upload;
+	}
+
+	public String getUploadContentType() {
+		return uploadContentType;
+	}
+
+	public void setUploadContentType(String uploadContentType) {
+		this.uploadContentType = uploadContentType;
+	}
+
+	public String getUploadFileName() {
+		return uploadFileName;
+	}
+
+	public void setUploadFileName(String uploadFileName) {
+		this.uploadFileName = uploadFileName;
+	}
+
+	public String getFileUploadPath() {
+		return fileUploadPath;
+	}
+
+	public void setFileUploadPath(String fileUploadPath) {
+		this.fileUploadPath = fileUploadPath;
+	}
+
+	public int getNo() {
+		return no;
+	}
+
+	public void setNo(int no) {
+		this.no = no;
+	}
+
+	public String getFile_orgName() {
+		return file_orgName;
+	}
+
+	public void setFile_orgName(String file_orgName) {
+		this.file_orgName = file_orgName;
+	}
+
+	public String getFile_savName() {
+		return file_savName;
+	}
+
+	public void setFile_savName(String file_savName) {
+		this.file_savName = file_savName;
+	}
+
+	public boardVO getResultClass() {
+		return resultClass;
+	}
+
+	public void setResultClass(boardVO resultClass) {
+		this.resultClass = resultClass;
+	}
+
+	public int getCurrentPage() {
+		return currentPage;
+	}
+
+	public void setCurrentPage(int currentPage) {
+		this.currentPage = currentPage;
+	}
 }
